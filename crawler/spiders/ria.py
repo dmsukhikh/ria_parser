@@ -1,6 +1,8 @@
-import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
+import re
+import typing
+import texttable
 
 
 class RiaSpider(CrawlSpider):
@@ -19,16 +21,42 @@ class RiaSpider(CrawlSpider):
             allow_domains="ria.ru", allow="\\.html$")),
     )
 
+    def _get_plain_text(self, html_text : str) -> str:
+        return re.sub("<[^<>]*>", "", html_text)
+
     def parse(self, response):
         parsed_article_text = ""
 
         for block in response.css("div[class=article__block]"):
-            if ("data-type" not in block.attrib):
+            if "data-type" not in block.attrib:
                 continue
 
-            if (block.attrib["data-type"] == "text"):
-                for part in block.css("div[class=article__text]"):
-                    parsed_article_text += part.css("*::text").get()
+            if block.attrib["data-type"] == "text":
+                parsed_article_text += self._get_plain_text(
+                    block.css("div[class=article__text]").get())
+
+            elif block.attrib["data-type"] == "list":
+                for item in block.css("li[class=article__list-item]::text"):
+                    parsed_article_text += "\t- " + item.get() + "\n"
+                continue
+
+            elif block.attrib["data-type"] == "table":
+                table = texttable.Texttable() 
+                row = [txt for txt in block.css("p::text")]
+                if len(row) == 0:
+                    row = ["" for _ in block.css("td")]
+                table.add_row(row)
+                parsed_article_text += str(table.draw())
+
+            elif re.match("^h\\d$", block.attrib["data-type"]):
+                parsed_article_text += "\n" + \
+                    block.css(
+                        block.attrib["data-type"]+"::text").get() + "\n"
+
+            else:
+                continue
+
+            parsed_article_text += "\n"
 
         yield {"content": parsed_article_text}
 
