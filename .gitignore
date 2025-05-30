@@ -1,5 +1,3 @@
-bin
-include
-lib
-lib64
-pyvenv.cfg
+venv
+crawler/__pycache__/
+crawler/spiders/__pycache__/
