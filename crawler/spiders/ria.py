@@ -18,13 +18,13 @@ class RiaSpider(CrawlSpider):
 
     rules = (
         Rule(link_extractor=LinkExtractor(
-            allow_domains="ria.ru", allow=r"\/\d+\/.+html"), callback="parse"),
+            allow_domains="ria.ru", allow=r"\/\d+\/.+html"), callback="parse_item", follow=True),
     )
 
     def _get_plain_text(self, html_text : str) -> str:
         return re.sub("<[^<>]*>", "", html_text)
 
-    def parse(self, response):
+    def parse_item(self, response):
         parsed_article_text = ""
 
         date = response.css(
