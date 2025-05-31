@@ -31,6 +31,8 @@ class RiaSpider(CrawlSpider):
             "div[class=article__info-date]").css("a::text").get()
         
         header = response.css("div[class=article__title]::text").get()
+        if header is None:
+            header = response.css("h1[class=article__title]::text").get()
 
         for block in response.css("div[class=article__block]"):
             if "data-type" not in block.attrib:
