@@ -10,9 +10,10 @@ class RiaSpider(CrawlSpider):
     start_urls = ["https://ria.ru"] 
     custom_settings = {
         "USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:137.0) Gecko/20100101 Firefox/137.0",
-        "DEPTH_LIMIT": 10,
+        "DEPTH_LIMIT": 4,
         "DOWNLOAD_DELAY": 1.5,
-        "ROBOTSTXT_OBEY": True
+        "ROBOTSTXT_OBEY": True,
+        "CLOSESPIDER_ITEMCOUNT": 200
     }
 
     rules = (
@@ -40,7 +41,7 @@ class RiaSpider(CrawlSpider):
                continue
 
            elif block.attrib["data-type"] == "table":
-               table = texttable.Texttable()
+               table = texttable.Texttable(max_width=0)
                row = [txt for txt in block.css("p::text")]
                if len(row) == 0:
                    row = ["" for _ in block.css("td")]
