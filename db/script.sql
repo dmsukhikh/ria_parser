@@ -1,8 +1,9 @@
 CREATE TABLE IF NOT EXISTS articles (
     id SERIAL PRIMARY KEY,
+    header TEXT NOT NULL,
     url TEXT UNIQUE NOT NULL,
     publishing_date TIMESTAMP NOT NULL,
-    content TEXT
+    content TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS tags (

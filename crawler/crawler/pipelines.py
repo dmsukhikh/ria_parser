@@ -6,8 +6,26 @@
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
+from scrapy.exceptions import DropItem
+from sqlalchemy import Engine
 
 
-class NewsParserPipeline:
+class DropEmptyItems:
     def process_item(self, item, spider):
+        prep_item = ItemAdapter(item)
+
+        for field in ["date", "header", "url", "content"]:
+            if len(str(prep_item.get(field))) == 0:
+                raise DropItem(f"item has empty field \"{field}\"")
+
+        return item
+
+class InsertIntoDatabase:
+    def process_item(self, item, spider):
+        prep_item = ItemAdapter(item)
+
+        for field in ["date", "header", "url", "content"]:
+            if len(str(prep_item.get(field))) == 0:
+                raise DropItem(f"item has empty field \"{field}\"")
+
         return item
