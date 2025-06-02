@@ -1,0 +1,3 @@
+PATH=/usr/local/bin
+0 * * * * cd /usr/local/crawl/ && scrapy crawl ria > /proc/1/fd/1 2>/proc/1/fd/2
+
