@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    container_name: ria-db
+    environment:
+      POSTGRES_USER: crawler
+      POSTGRES_PASSWORD: entity228
+      POSTGRES_DB: ria
+    ports:
+      - "8085:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db:/docker-entrypoint-initdb.d
+
+volumes:
+  pgdata:

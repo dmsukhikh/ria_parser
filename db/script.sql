@@ -24,3 +24,8 @@ ON articles ((publishing_date::date));
 CREATE UNIQUE INDEX IF NOT EXISTS unique_article_tag 
 ON tags_of_articles(article_id, tag_id);
 
+-- Создадим пользователя
+CREATE USER server;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO crawler;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO crawler;
+

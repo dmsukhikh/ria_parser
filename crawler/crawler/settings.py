@@ -99,6 +99,6 @@ DUPEFILTER_CLASS = "crawler.dupefilters.CustomDupeFilter"
 POSTGRES_USERNAME = "crawler"
 POSTGRES_PASSWORD = "entity228"
 POSTGRES_HOST = "localhost"
-POSTGRES_PORT = 5432
+POSTGRES_PORT = 8085
 POSTGRES_DATABASE = "ria"
 
