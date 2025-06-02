@@ -29,7 +29,11 @@ class HandleDate:
         prep_item = ItemAdapter(item)
         
         date = prep_item["date"]
-        date = ' '.join(date.split()[::-1]).replace('.', '-')
+        date = date.split()[::-1]
+        day = date[0].split('.')
+        date = '-'.join(day[::-1]) + " " + date[1]
+
+
 
         prep_item.update({"date": date})
         return item
@@ -76,7 +80,9 @@ class InsertIntoDatabase:
                     logging.INFO, 
                     f"Dublicating while inserting item {adapter.get("url")}")
                 connection.rollback()
+                raise DropItem("Dublicate")
 
+            # save the article
             # fetching id of the tuple
             id = connection.execute(
                     sqlalchemy.text(f"SELECT id FROM articles WHERE "
@@ -87,13 +93,14 @@ class InsertIntoDatabase:
 
             #inserting tags and entries into many-to-many table
             for tag in adapter.get("tags", []):
-                try:
-                    connection.execute(sqlalchemy.text(
-                        f"INSERT INTO tags VALUES (DEFAULT, '{tag}')"))
-                except DBAPIError:
-                    logging.log(
-                        logging.INFO, f"Dublicating while inserting tag {tag}")
-                    connection.rollback()
+                with connection.begin_nested() as sp:
+                    try:
+                        connection.execute(sqlalchemy.text(
+                            f"INSERT INTO tags VALUES (DEFAULT, '{tag}')"))
+                    except DBAPIError:
+                        logging.log(
+                            logging.INFO, f"Dublicating while inserting tag {tag}")
+                        sp.rollback()
 
                 # fetching id of the tag tuple
                 tag_id = connection.execute(
@@ -103,14 +110,16 @@ class InsertIntoDatabase:
                 if tag_id is not None:
                     tag_id = tag_id[0]
 
-                try:
-                    connection.execute(sqlalchemy.text(
-                        f"INSERT INTO tags_of_articles VALUES ( "
-                        f"DEFAULT, '{id}', '{tag_id}')"))
-                except DBAPIError:
-                    logging.log(
-                        logging.INFO, f"Dublicating while inserting tag {tag}")
-                    connection.rollback()
+
+                with connection.begin_nested() as sp:
+                    try:
+                        connection.execute(sqlalchemy.text(
+                            f"INSERT INTO tags_of_articles VALUES ( "
+                            f"DEFAULT, '{id}', '{tag_id}')"))
+                    except DBAPIError:
+                        logging.log(
+                            logging.INFO, f"Dublicating while inserting tag {tag}")
+                        sp.rollback()
 
             connection.commit() 
 
