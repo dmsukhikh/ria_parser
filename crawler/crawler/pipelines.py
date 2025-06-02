@@ -123,3 +123,5 @@ class InsertIntoDatabase:
 
             connection.commit() 
 
+        return item
+
