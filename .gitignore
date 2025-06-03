@@ -1,6 +1,7 @@
 crawler/venv
 api/venv
 api/__pycache__
+api/backend/__pycache__
 crawler/crawler/__pycache__/
 crawler/crawler/spiders/__pycache__/
 *.jsonl
