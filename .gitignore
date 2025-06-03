@@ -1,4 +1,5 @@
 crawler/venv
+api/venv
 crawler/crawler/__pycache__/
 crawler/crawler/spiders/__pycache__/
 *.jsonl
