@@ -75,6 +75,11 @@ def query_checks() -> bool:
 
     if sum(x in flask.request.args.keys() for x in ["from", "to"]) == 1:
         return False
+
+    if not flask.request.args.get("page", "0").isdecimal() or \
+       not flask.request.args.get("limit", "0").isdecimal():
+        return False
+
     return True
 
 # handlers
@@ -115,6 +120,21 @@ def tags_handle(query: Select, tag: str) -> Select:
 
     return query.where(Article.id.in_(subquery))
 
+def page_handle(query: Select, page_str: str, limit_str: str) -> Select:
+    if (page_str == "" or int(page_str) <= 0):
+        page = 1
+    else:
+        page = int(page_str)
+
+    if (limit_str == "" or int(limit_str) <= 0):
+        limit = 10
+    else:
+        limit = int(limit_str)
+
+    print(page)
+
+    return query.order_by(Article.id).slice((page-1)*limit, page*limit)
+
 
 # application
 
@@ -149,12 +169,11 @@ def fetch_many_articles():
         query = date_handle(query, flask.request.args.get("date", ""))
 
     query = tags_handle(query, flask.request.args.get("tag", ""))
+    query = page_handle(query, flask.request.args.get("page", ""),
+                        flask.request.args.get("limit", ""))
 
     
     with db.session() as s:
         response = s.execute(query).all()
         to_output = flask.jsonify([item._asdict() for item in response])
         return to_output
-
-if __name__ == '__main__':
-    app.run(debug=True)
