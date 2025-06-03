@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: entity228
       POSTGRES_DB: ria
     ports:
-      - "8085:5432"
+      - "5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./db:/docker-entrypoint-initdb.d
@@ -16,6 +16,12 @@ services:
   crawler:
     build: ./crawler
     container_name: ria-crawl
+
+  server:
+    build: ./api
+    container_name: ria-server
+    ports:
+      - "9090:8080"
 
 volumes:
   pgdata:

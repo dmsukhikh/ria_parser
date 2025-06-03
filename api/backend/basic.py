@@ -8,11 +8,11 @@ app = flask.Flask(__name__)
 # configuration for entering the database
 app.config['SQLALCHEMY_DATABASE_URI'] = URL.create(
     database='ria',
-    host='localhost',
+    host='ria-db',
     username='server',
     password='server52BOB',
     drivername='postgresql',
-    port=8085
+    port=5432
 ).render_as_string(hide_password=False)
 
 print(app.config['SQLALCHEMY_DATABASE_URI'])
