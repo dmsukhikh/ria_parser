@@ -25,7 +25,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS unique_article_tag
 ON tags_of_articles(article_id, tag_id);
 
 -- Создадим пользователя
-CREATE USER server;
-GRANT ALL ON ALL TABLES IN SCHEMA public TO crawler;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO crawler;
+CREATE USER server WITH PASSWORD 'server52BOB';
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO server;
+GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO server;
 
