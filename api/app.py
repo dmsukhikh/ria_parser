@@ -19,8 +19,8 @@ def fetch_article(id):
                                   "publishing_date": article.publishing_date,
                                   "content": article.content, "tags": tags})
         except NoResultFound:
-            s.rollback()
-    return flask.jsonify({"response": "not found"})
+                s.rollback()
+        return flask.jsonify({"response": "not found"})
 
 @backend.basic.app.route("/articles")
 def fetch_many_articles():
@@ -32,11 +32,16 @@ def fetch_many_articles():
                    Article.publishing_date)
 
     # after checks, if to in list when "from" in list anyway
-    if "to" in flask.request.args.keys(): 
-        query = handle.from_to_handle(query, flask.request.args.get("from", ""),
-                                      flask.request.args.get("to", ""))
-    else:
-        query = handle.date_handle(query, flask.request.args.get("date", ""))
+    try:
+        if "to" in flask.request.args.keys(): 
+            query = handle.from_to_handle(query, flask.request.args.get("from", ""),
+                                          flask.request.args.get("to", ""))
+        else:
+            query = handle.date_handle(query, flask.request.args.get("date", ""))
+    except ValueError:
+        # if incorrect date param
+        return flask.jsonify({"response": "incorrect query params"})
+
 
     query = handle.tags_handle(query, flask.request.args.get("tag", ""))
     query = handle.page_handle(query, flask.request.args.get("page", ""),

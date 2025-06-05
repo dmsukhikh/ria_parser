@@ -16,3 +16,4 @@ def query_checks() -> bool:
         return False
 
     return True
+

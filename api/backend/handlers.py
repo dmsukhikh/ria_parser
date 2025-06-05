@@ -6,7 +6,7 @@ from sqlalchemy import Date, Select, between, func, select
 
 def date_handle(query : Select, q : str) -> Select:
     if len(q) > 0 and not re.match(r"\d{4}-\d{2}-\d{2}", q):
-        return query 
+        raise ValueError(f"incorrect param in from or to")
 
     if len(q) == 0:
         t = datetime.date.today()
@@ -20,7 +20,8 @@ def date_handle(query : Select, q : str) -> Select:
 
 def from_to_handle(query : Select, fr : str, to : str) -> Select:
     if not all(re.match(r"\d{4}-\d{2}-\d{2}", q) for q in [fr, to]):
-        return query 
+        raise ValueError(f"incorrect param in from or to")
+
     from_prep = [int(i) for i in fr.split('-')]
     to_prep = [int(i) for i in to.split('-')]
 
@@ -33,6 +34,7 @@ def from_to_handle(query : Select, fr : str, to : str) -> Select:
 def tags_handle(query: Select, tag: str) -> Select:
     if tag == "":
         return query
+
     tags = tag.split(',')
     
     subquery = select(TagOfArticle.article_id).join(
